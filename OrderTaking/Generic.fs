@@ -21,3 +21,5 @@ type Command<'data> =
     { Data : 'data
       TimeStamp : DateTime
       UserId : string }
+
+type AsyncResult<'success, 'failure> = Async<Result<'success, 'failure>>
