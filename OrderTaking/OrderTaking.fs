@@ -1,6 +1,7 @@
 ﻿namespace OrderTaking.Domain
 
-type Undefined = exn
+open OrderTaking.Generic
+
 
 // Product code related
 
@@ -14,18 +15,22 @@ type ProductCode =
     | Gizmo of GizmoCode
 
 // Order quantity related
-type UnitQuantity = UnitQuantity of int
+type UnitQuantity = private UnitQuantity of int
 type KilogramQuantity = KilogramQuantity of decimal
 
 type OrderQuantity =
-    | UnitQuantity of UnitQuantity
-    | KilogramQuantity of KilogramQuantity
+    | Unit of UnitQuantity
+    | Kilos of KilogramQuantity
 
 type OrderId = Undefined
 type OrderLineId = Undefined
 type CustomerId = Undefined
 
+type UnvalidatedAddress = Undefined
+type ValidatedAddress = private ValidatedAddress of string
+
 type CustomerInfo = Undefined
+type UnvalidatedCustomerInfo = Undefined
 type ShippingAdress = Undefined
 type BillingAdress = Undefined
 type Price = Undefined
@@ -48,12 +53,18 @@ and OrderLine =
 
 type UnvalidatedOrder =
     { OrderId: string
-      CustomerInfo: CustomerInfo
-      ShippingAdress: ShippingAdress
-      BillingAdress: BillingAdress
-      OrderLines: OrderLine list }
+      CustomerInfo: UnvalidatedCustomerInfo
+      ShippingAdress: UnvalidatedAddress
+      BillingAdress: UnvalidatedAddress
+      OrderLines: NonEmptyList<OrderLine> }
 
-type ValidatedOrder = Undefined
+type ValidatedOrder = {
+    OrderId: OrderId
+    CustomerInfo: CustomerInfo
+    ShippingAdress: ValidatedAddress
+    BillingAdress: ValidatedAddress
+    OrderLines: NonEmptyList<OrderLine>
+}
 
 type PlaceOrderError =
     | ValidationError of ValidationError list
@@ -62,6 +73,8 @@ type PlaceOrderError =
 and ValidationError =
     { FieldName: string
       ErrorDescription: string }
+
+type PlaceOrder = Command<UnvalidatedOrder>
 
 type AcknowledgementSent = Undefined
 type OrderPlaced = Undefined
@@ -72,4 +85,11 @@ type PlaceOrderEvents =
       OrderPlaced: OrderPlaced
       BillableOrderPlaced: BillableOrderPlaced }
 
-type PlaceOrder = UnvalidatedOrder -> Result<PlaceOrderEvents, PlaceOrderError>
+type PlaceOrderWorkflow = UnvalidatedOrder -> Result<PlaceOrderEvents, PlaceOrderError>
+
+module UnitQuantity =
+    let create =
+        function
+        | over when over > 1000 -> Error "Unit quantity cannot be over 1000"
+        | under when under < 1 -> Error "Unit quantity cannot be under 1"
+        | good -> Ok (UnitQuantity good)

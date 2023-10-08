@@ -4,6 +4,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Generic.fs" />
     <Compile Include="OrderTaking.fs" />
   </ItemGroup>
 </Project>
