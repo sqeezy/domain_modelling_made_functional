@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Generic.fs" />
-    <Compile Include="OrderTaking.fs" />
+    <Compile Include="DomainApi.fs" />
+    <Compile Include="PlaceOrderWorkflow.fs" />
   </ItemGroup>
 </Project>
