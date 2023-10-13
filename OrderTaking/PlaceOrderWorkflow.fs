@@ -2,6 +2,14 @@
 
 open OrderTaking.Generic
 
+// -------------------
+// Order life cycle
+// -------------------
+
+// validated state
+type CustomerInfo = Undefined
+type ValidatedAddress = private ValidatedAddress of string
+
 type ValidatedOrderLine =
     { Id: OrderLineId
       OrderId: OrderId
@@ -16,17 +24,27 @@ type ValidatedOrder =
       BillingAdress: ValidatedAddress
       OrderLines: NonEmptyList<ValidatedOrderLine> }
 
+// priced state
 type PricedOrder = Undefined
 
+// all states
 type Order =
     | Unvalidated of UnvalidatedOrder
     | Validated of ValidatedOrder
     | Priced of PricedOrder
 
+
+// -------------------
+// Definitions of internal steps
+// -------------------
+
+// ---- Validate Order -----
+
+// services used by ValidateOrder
+type CheckProductCodeExists = ProductCode -> bool
+
 type CheckedAddress = CheckedAddress of UnvalidatedAddress
 type AddressValidationError = Undefined
-
-type CheckProductCodeExists = ProductCode -> bool
 type CheckAdressExists = UnvalidatedAddress -> AsyncResult<CheckedAddress, AddressValidationError>
 
 type ValidateOrder =

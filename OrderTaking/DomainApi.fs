@@ -34,9 +34,7 @@ type OrderQuantity =
     | Kilos of KilogramQuantity
 
 type UnvalidatedAddress = Undefined
-type ValidatedAddress = private ValidatedAddress of string
 
-type CustomerInfo = Undefined
 type UnvalidatedCustomerInfo = Undefined
 type Price = Undefined
 type BillingAmount = Undefined
